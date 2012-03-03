@@ -1,0 +1,11 @@
+#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Categories=PackageManager;Utility;
+Comment=Source installer!!!
+Exec=/home/bijan/Source/Ijadi/PURE/Source/ijadi
+GenericName=Ijadi
+Icon=ijadi
+Name=Ijadi
+Type=Application
+Name[en_US]=Ijadi
