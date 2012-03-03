@@ -15,6 +15,7 @@
 
 #include "ijadi-gui.h"
 #include "ijadi-application.h"
+#include "ijadi-wizard.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <gtk/gtk.h>
@@ -30,6 +31,7 @@ struct _IjadiGuiPrivate
 	GtkWidget* box_main;
 	GtkWidget *menu_bar;
 	GtkWidget *toolbar;
+	IjadiWizard *wizard;
 };
 
 #define IJADI_GUI_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), IJADI_TYPE_GUI, IjadiGuiPrivate))
@@ -111,15 +113,20 @@ ijadi_gui_class_init (IjadiGuiClass *klass)
 }
 /********************************** CALLBACK FUNCTION **************************************/
 void
-ijadi_gui_btn_new_project_clicked ()
+ijadi_gui_btn_new_project_clicked (GtkButton *button, gpointer user_data)
 {
-	printf ("Hello Bijan\n");
+	IjadiGui *object = IJADI_GUI(user_data);
+	IjadiGuiPrivate *priv = IJADI_GUI_PRIVATE(object);
+	priv->wizard = Ijadi_wizard_new ();
+	ijadi_wizard_start (priv->wizard);
 }
 
 void
-ijadi_gui_btn_update_source_clicked ()
+ijadi_gui_btn_update_source_clicked (GtkButton *button,gpointer  user_data)
 {
-	printf ("Hello World\n");
+	IjadiGui *object = IJADI_GUI(user_data);
+	IjadiGuiPrivate *priv = IJADI_GUI_PRIVATE(object);
+	printf (LOCAL_RESOURCES"/Hello World Project\n");
 }
 
 void
@@ -234,13 +241,22 @@ GdkPixbuf *create_pixbuf(const gchar * filename)
 }
  
 /************************************ PUBLIC FUNCTION ****************************************/
+//! Start gui 
+void ijadi_gui_start (IjadiGui *object)
+{
+	gtk_widget_show_all(GTK_WIDGET(object));
+}
+
 //! create main gui window 
 /*!
-    \param object instance of IjadiGui
+    \return Pure instance from IjadiGui
 */
-void
-ijadi_gui_create_window (IjadiGui *object)
+IjadiGui * 		Ijadi_gui_new()
 {
+	g_type_init ();
+	IjadiGui *object = g_object_new(IJADI_TYPE_GUI,
+					   "type", GTK_WINDOW_TOPLEVEL,NULL);
+
 	//Style Provider
 	GtkStyleProvider *provider;
 	provider = GTK_STYLE_PROVIDER (gtk_css_provider_new ());
@@ -254,7 +270,7 @@ ijadi_gui_create_window (IjadiGui *object)
 
 	//Style for window
 	gtk_style_context_add_class (gtk_widget_get_style_context (GTK_WIDGET(object)), "ijadi-window");
-	gtk_css_provider_load_from_path (GTK_CSS_PROVIDER(provider),"/home/bijan/Source/Ijadi/PURE/Resourses/style.css",NULL);
+	gtk_css_provider_load_from_path (GTK_CSS_PROVIDER(provider),LOCAL_RESOURCES"/style.css",NULL);
 	gtk_style_context_reset_widgets (gdk_screen_get_default ());
 	//------------Create Widget----------------
 	//Add Button
@@ -282,33 +298,13 @@ ijadi_gui_create_window (IjadiGui *object)
 	
 	//Add layout to window
 	gtk_container_add (GTK_CONTAINER (object), priv->box_main);
-
 	//-----------Connect Signal-------------
 	g_signal_connect (GTK_WIDGET(object), "destroy", G_CALLBACK (gtk_main_quit), NULL);
-	g_signal_connect (priv->btn_update_source, "clicked", G_CALLBACK (ijadi_gui_btn_update_source_clicked), NULL);
-	g_signal_connect (priv->btn_new_project, "clicked", G_CALLBACK (ijadi_gui_btn_new_project_clicked), NULL);
+	g_signal_connect (priv->btn_update_source, "clicked", G_CALLBACK (ijadi_gui_btn_update_source_clicked), object);
+	g_signal_connect (priv->btn_new_project, "clicked", G_CALLBACK (ijadi_gui_btn_new_project_clicked), object);
 	//------------------Finalize-----------------
 	gtk_window_set_application (GTK_WINDOW(object),GTK_APPLICATION(IJADI_APP));
-}
-
-//! Start gui 
-void ijadi_gui_start (IjadiGui *object)
-{
-	IjadiGuiPrivate *priv = IJADI_GUI_PRIVATE(object);
-	ijadi_gui_create_window(object);
-	gtk_widget_show_all(GTK_WIDGET(object));
-}
-
-//! create instance from IjadiGui
-/*!
-    \return Pure instance from IjadiGui
-*/
-IjadiGui * 		Ijadi_gui_new()
-{
-	g_type_init ();
-	IjadiGui *gui = g_object_new(IJADI_TYPE_GUI,
-					   "type", GTK_WINDOW_TOPLEVEL,NULL);
-	return gui;
+	return object;
 }
 
 

@@ -16,6 +16,7 @@
 #ifndef _IJADI_WIZARD_H_
 #define _IJADI_WIZARD_H_
 
+#include "ijadi-define.h"
 #include <glib-object.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,7 +47,9 @@ struct _IjadiWizard
 	GtkWindow parent_instance;
 };
 
-GType ijadi_wizard_get_type (void) G_GNUC_CONST;
+GType 					ijadi_wizard_get_type (void) G_GNUC_CONST;
+IjadiWizard * 		Ijadi_wizard_new();
+void						ijadi_wizard_start (IjadiWizard *);
 
 G_END_DECLS
 

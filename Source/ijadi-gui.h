@@ -16,6 +16,7 @@
 #ifndef _IJADI_GUI_H_
 #define _IJADI_GUI_H_
 
+#include "ijadi-define.h"
 #include <glib-object.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -48,7 +49,6 @@ struct _IjadiGui
 };
 
 GType ijadi_gui_get_type (void) G_GNUC_CONST;
-void				 ijadi_gui_create_window (IjadiGui *);
 void				ijadi_gui_start (IjadiGui *);
 IjadiGui * 		Ijadi_gui_new();
 

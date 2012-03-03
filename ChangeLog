@@ -1,4 +1,29 @@
 ------------------------------------------------------------
+revno:       4
+committer:   Bijan Binaee <bijanbina@gmail.com>
+branch nick: Main
+timestamp:   Friday, March 3, 2012
+message:
+  Add ijadi-define.h for include some default value
+------------------------------------------------------------
+revno:       3
+committer:   Bijan Binaee <bijanbina@gmail.com>
+branch nick: Main
+timestamp:   Friday, March 2, 2012
+message:
+  Add config.h.in for get some info in C source file
+  Add ijadi icon and shortcut
+  Add some file to project makefile
+  Use local file to load resource
+------------------------------------------------------------
+revno:       2
+committer:   Bijan Binaee <bijanbina@gmail.com>
+branch nick: Main
+timestamp:   Friday, March 1, 2012
+message:
+  Add Header for new-project Diolog
+  Change some make file and edit code
+------------------------------------------------------------
 revno:       1 (Start Project)
 committer:   Bijan Binaee <bijanbina@gmail.com>
 branch nick: Main

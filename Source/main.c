@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <gtk/gtk.h>
-#include <clutter/clutter.h>
 #include <ijadi-gui.h>
 #include <ijadi-application.h>
 
@@ -23,7 +22,6 @@ void start (int argc, char *argv[])
 	//init require implimention
 	gtk_init(&argc, &argv);
 	
-	//gtk_window_set_default_icon_name ("eog");
 	g_application_run (G_APPLICATION (IJADI_APP), argc, argv); 
 }
 

@@ -73,7 +73,6 @@ ijadi_application_open_window         (IjadiApplication* application)
 gtk_window_set_application (GTK_WINDOW(gui), GTK_APPLICATION (application));
 	return TRUE;
 }
-
 /**
  * eog_application_get_instance:
  *
