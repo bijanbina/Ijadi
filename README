@@ -7,4 +7,4 @@ Ijadi
   have a stylish gtk3 gui
   
 for install just run bottom command in terminal:
-autoreconf -i;./configure;make;sudomake install
+autoreconf -i;./configure;make;sudo make install

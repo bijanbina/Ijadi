@@ -1,5 +1,6 @@
-#some variable for data directory defined here
-INCLUDES =	-DIJADI_RESOURCES=\"$(datadir)/ijadi/Resources\"
+#some variable for data directory defined here "These Value Can use in source file"
+INCLUDES =	-DIJADI_RESOURCES=\"$(datadir)/ijadi/Resources\" \
+            -DIJADI_UI=\"$(datadir)/ijadi/UI\"
 
 bin_PROGRAMS = ijadi
 

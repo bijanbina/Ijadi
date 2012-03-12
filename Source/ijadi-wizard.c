@@ -25,13 +25,11 @@ struct _IjadiWizardPrivate
 	GtkWidget* btn_cancel;
 	GtkWidget* box_button;
 	GtkWidget* box_main;
-	GtkWidget* box_info;//All of information widget inside here
+	GtkWidget* box_ui;//All of information widget inside here
 	GtkWidget* img_header;
-	GtkWidget* txt_name;
-	GtkWidget* txt_author;
-	GtkWidget* txt_version;
-	GtkWidget* txt_dir;
-	GtkWidget* txt_email;
+	GtkWidget* swt_git;//Git Switch
+	GtkWidget* btn_browse;
+	GtkBuilder *ui_builder;//Create user interface from ui file
 };
 
 #define IJADI_WIZARD_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), IJADI_TYPE_WIZARD, IjadiWizardPrivate))
@@ -90,6 +88,72 @@ ijadi_wizard_class_init (IjadiWizardClass *klass)
 
 }
 /*********************************** PRIVATE FUNCTION ****************************************/
+//! run when new project button clicked
+/*!
+    \param button some made entery(you must initialize it befor invoke this finction)
+    \return user_data box widget
+*/
+void
+ijadi_wizard_btn_new_project_clicked (GtkButton *button, gpointer user_data)
+{
+	IjadiWizard *object = IJADI_WIZARD(user_data);
+	g_printf("Hi\n");
+}
+//! run when git swich button changed
+/*!
+    \param button some made entery(you must initialize it befor invoke this finction)
+    \return user_data box widget
+*/
+void
+ijadi_wizard_swt_git_active (GtkSwitch *widget,gboolean value,gpointer   user_data)
+{
+	IjadiWizard *object = IJADI_WIZARD(user_data);
+	IjadiWizardPrivate *priv = IJADI_WIZARD_PRIVATE(object);
+	GtkWidget *entry_user = GTK_WIDGET (gtk_builder_get_object (priv->ui_builder, "entry7"));
+	GtkWidget *entry_pass = GTK_WIDGET (gtk_builder_get_object (priv->ui_builder, "entry8"));
+
+	gtk_editable_set_editable(GTK_EDITABLE(entry_user),FALSE);
+	gtk_editable_set_editable           (GTK_EDITABLE(entry_pass),gtk_switch_get_active (GTK_SWITCH(priv->swt_git)));
+
+}
+//! create a box layout that contain a label and an entery
+/*!
+    \param txt some made entery(you must initialize it befor invoke this finction)
+    \return a box widget
+*/
+GtkWidget *
+ijadi_gui_create_ui (IjadiWizard *object)
+{
+	IjadiWizardPrivate *priv = IJADI_WIZARD_PRIVATE(object);
+	GtkWidget *ui_widget;
+	GError* error = NULL;
+
+	//Create some widget that glade wont allow to use them :)
+	priv->swt_git = gtk_switch_new ();
+	priv->btn_browse = gtk_file_chooser_button_new ("Browse",GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+	//Set New widget prpert
+	gtk_switch_set_active(GTK_SWITCH(priv->swt_git),TRUE);
+	
+	priv->ui_builder = gtk_builder_new ();
+	if (!gtk_builder_add_from_file (priv->ui_builder, LOCAL_UI"/new-wizard.ui", &error))
+	{
+		g_critical ("Couldn't load builder file: %s", error->message);
+		g_error_free (error);
+	}
+	
+	/* connect signal handlers */
+	g_signal_connect (priv->swt_git ,"notify::active", G_CALLBACK (ijadi_wizard_swt_git_active) , object);
+	ui_widget = GTK_WIDGET (gtk_builder_get_object (priv->ui_builder, "box1"));
+	gtk_container_add (GTK_CONTAINER(gtk_builder_get_object (priv->ui_builder, "box2")),priv->swt_git);
+	gtk_container_add (GTK_CONTAINER(gtk_builder_get_object (priv->ui_builder, "box3")),priv->btn_browse);
+
+
+
+	GtkWidget *textv = GTK_WIDGET (gtk_builder_get_object (priv->ui_builder, "textview1"));
+	gtk_style_context_add_class (gtk_widget_get_style_context (textv),"ijadi-text-view");
+	gtk_widget_unparent (ui_widget);
+	return ui_widget;
+}
 //! create a box layout that contain a label and an entery
 /*!
     \param txt some made entery(you must initialize it befor invoke this finction)
@@ -131,36 +195,30 @@ IjadiWizard* Ijadi_wizard_new()
 	//------------Create Widget----------------
 	priv->img_header = gtk_image_new_from_file(LOCAL_RESOURCES"/new-header.png");
 	priv->btn_cancel  = gtk_button_new_with_label ("Cancel");
-	priv->btn_create  = gtk_button_new_with_label ("Create");
+	priv->btn_create  = gtk_button_new_with_label ("Next");
 	//------------Create Layout--------------
+	//----------------Create UI-----------------
+	priv->box_ui = ijadi_gui_create_ui (object);
 	//---------------------Button BOX--------------------------
 	priv->box_button = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL );
 	gtk_button_box_set_layout (GTK_BUTTON_BOX (priv->box_button),GTK_BUTTONBOX_END);
 	gtk_box_pack_start (GTK_BOX(priv->box_button),priv->btn_cancel,FALSE,TRUE,0);
 	gtk_box_pack_start (GTK_BOX(priv->box_button),priv->btn_create,FALSE,TRUE,0);
-	gtk_widget_set_margin_right(priv->box_button,5);
+	gtk_widget_set_margin_right(priv->box_button,30);
 	gtk_widget_set_margin_left(priv->box_button,5);
-	gtk_widget_set_margin_bottom(priv->box_button,5);
+	gtk_widget_set_margin_bottom(priv->box_button,15);
 	gtk_widget_set_margin_top(priv->box_button,5);
-	priv->txt_name = gtk_entry_new ();
-	priv->txt_author = gtk_entry_new ();
-	priv->txt_version = gtk_entry_new ();
-	priv->txt_dir = gtk_entry_new ();
-	priv->txt_email = gtk_entry_new ();
 
 	//
 	priv->box_main = gtk_box_new(GTK_ORIENTATION_VERTICAL,5);
 	gtk_box_pack_start (GTK_BOX(priv->box_main),priv->img_header,TRUE,TRUE,0);
+	gtk_box_pack_start (GTK_BOX(priv->box_main),priv->box_ui,TRUE,TRUE,0);
 	//---------------------Info BOX--------------------------
-	gtk_box_pack_start (GTK_BOX(priv->box_main),ijadi_gui_create_form(priv->txt_name,"Project Name : "),TRUE,TRUE,0);
-	gtk_box_pack_start (GTK_BOX(priv->box_main),ijadi_gui_create_form(priv->txt_author,"Author Name : "),TRUE,TRUE,0);
-	gtk_box_pack_start (GTK_BOX(priv->box_main),ijadi_gui_create_form(priv->txt_version,"Version : "),TRUE,TRUE,0);
-	gtk_box_pack_start (GTK_BOX(priv->box_main),ijadi_gui_create_form(priv->txt_dir,"Directory : "),TRUE,TRUE,0);
-	gtk_box_pack_start (GTK_BOX(priv->box_main),ijadi_gui_create_form(priv->txt_email,"Author Email : "),TRUE,TRUE,0);
 	gtk_box_pack_start (GTK_BOX(priv->box_main),priv->box_button,TRUE,TRUE,0);
 	//gtk_box_pack_start (GTK_BOX(priv->box_main),priv->box_button,TRUE,TRUE,0);
 	//Add layout to window
-	gtk_container_add (GTK_CONTAINER (object), priv->box_main);
+	//gtk_widget_reparent(priv->box_main,GTK_CONTAINER (object));
+	gtk_container_add (GTK_CONTAINER(object),priv->box_main);
 	//------------------Finalize-----------------
 	gtk_window_set_application (GTK_WINDOW(object),GTK_APPLICATION(IJADI_APP));
 	return object;

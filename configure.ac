@@ -31,6 +31,7 @@ AC_CONFIG_FILES([
 	Makefile
 	Source/Makefile
   Resources/Makefile
+  Resources/UI/Makefile
 ])
 
 AC_OUTPUT

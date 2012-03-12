@@ -18,7 +18,9 @@
 
 #include <config.h>
 
-#define LOCAL_RESOURCES IJADI_RESOURCES
-//#define LOCAL_RESOURCES "Resources"
+//#define LOCAL_RESOURCES IJADI_RESOURCES
+//#define LOCAL_UI IJADI_UI
+#define LOCAL_RESOURCES "Resources"
+#define LOCAL_UI "Resources/UI"
 
 #endif /* _IJADI_GUI_H_ */

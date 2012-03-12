@@ -67,10 +67,10 @@ ijadi_application_class_init (IjadiApplicationClass *klass)
 gboolean
 ijadi_application_open_window         (IjadiApplication* application)
 {
-	IjadiGui *gui  = Ijadi_gui_new ();
+	IjadiGui *gui  = Ijadi_gui_new (GTK_WINDOW_TOPLEVEL);
 	
 	ijadi_gui_start(gui);
-gtk_window_set_application (GTK_WINDOW(gui), GTK_APPLICATION (application));
+	gtk_window_set_application (GTK_WINDOW(gui), GTK_APPLICATION (application));
 	return TRUE;
 }
 /**

@@ -11,3 +11,15 @@
 .ijadi-label {
 	color:#ffffff;
 }
+
+.ijadi-text-view {
+/*	background-image: url("/home/bijan/Pictures/texture/bg2.png");
+    background-repeat: repeat;*/
+    /*-inner-border              : 2;*/
+  
+	border-width:20px;
+
+  /*border: medium none;
+   border-radius: 4px 4px 4px 4px;*/
+
+}

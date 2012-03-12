@@ -1,3 +1,4 @@
+SUBDIRS = UI
 #datadir = /usr/share or something like that
 #here we create a directory in /usr/share and then put some Data in it
 Resourcesdir = $(datadir)/ijadi/Resources

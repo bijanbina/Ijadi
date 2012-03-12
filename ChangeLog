@@ -1,10 +1,32 @@
 ------------------------------------------------------------
+revno:       6
+committer:   Bijan Binaee <bijanbina@gmail.com>
+branch nick: Main
+timestamp:   Friday, March 12, 2012
+message:
+  Debug error for signal and slot in GtkSwitch
+  Add ui builder to private object in class
+  set git enable handle
+  Create Browse Window
+  add git signal and slot
+------------------------------------------------------------
+revno:       5
+committer:   Bijan Binaee <bijanbina@gmail.com>
+branch nick: Main
+timestamp:   Friday, March 12, 2012
+message:
+  Debug error for signal and slot in GtkSwitch
+  Add ui builder to private object in class
+  set git enable handle
+  Create Browse Window
+  add git signal and slot
+------------------------------------------------------------
 revno:       4
 committer:   Bijan Binaee <bijanbina@gmail.com>
 branch nick: Main
 timestamp:   Friday, March 3, 2012
 message:
-  Add ijadi-define.h for include some default value
+  All change that not affected update
 ------------------------------------------------------------
 revno:       3
 committer:   Bijan Binaee <bijanbina@gmail.com>
@@ -15,6 +37,7 @@ message:
   Add ijadi icon and shortcut
   Add some file to project makefile
   Use local file to load resource
+  Add ijadi-define.h for include some default value
 ------------------------------------------------------------
 revno:       2
 committer:   Bijan Binaee <bijanbina@gmail.com>
