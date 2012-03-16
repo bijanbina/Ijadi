@@ -29,6 +29,7 @@ struct _IjadiWizardPrivate
 	GtkWidget* img_header;
 	GtkWidget* swt_git;//Git Switch
 	GtkWidget* btn_browse;
+	GtkWidget* btn_browse_icon;
 	GtkBuilder *ui_builder;//Create user interface from ui file
 };
 
@@ -107,13 +108,13 @@ ijadi_wizard_btn_new_project_clicked (GtkButton *button, gpointer user_data)
 void
 ijadi_wizard_swt_git_active (GtkSwitch *widget,gboolean value,gpointer   user_data)
 {
-	IjadiWizard *object = IJADI_WIZARD(user_data);
+/*	IjadiWizard *object = IJADI_WIZARD(user_data);
 	IjadiWizardPrivate *priv = IJADI_WIZARD_PRIVATE(object);
 	GtkWidget *entry_user = GTK_WIDGET (gtk_builder_get_object (priv->ui_builder, "entry7"));
 	GtkWidget *entry_pass = GTK_WIDGET (gtk_builder_get_object (priv->ui_builder, "entry8"));
 
 	gtk_editable_set_editable(GTK_EDITABLE(entry_user),FALSE);
-	gtk_editable_set_editable           (GTK_EDITABLE(entry_pass),gtk_switch_get_active (GTK_SWITCH(priv->swt_git)));
+	gtk_editable_set_editable           (GTK_EDITABLE(entry_pass),gtk_switch_get_active (GTK_SWITCH(priv->swt_git)));*/
 
 }
 //! create a box layout that contain a label and an entery
@@ -131,6 +132,7 @@ ijadi_gui_create_ui (IjadiWizard *object)
 	//Create some widget that glade wont allow to use them :)
 	priv->swt_git = gtk_switch_new ();
 	priv->btn_browse = gtk_file_chooser_button_new ("Browse",GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+	priv->btn_browse_icon = gtk_file_chooser_button_new ("Browse Icon",GTK_FILE_CHOOSER_ACTION_OPEN);
 	//Set New widget prpert
 	gtk_switch_set_active(GTK_SWITCH(priv->swt_git),TRUE);
 	
@@ -144,9 +146,10 @@ ijadi_gui_create_ui (IjadiWizard *object)
 	/* connect signal handlers */
 	g_signal_connect (priv->swt_git ,"notify::active", G_CALLBACK (ijadi_wizard_swt_git_active) , object);
 	ui_widget = GTK_WIDGET (gtk_builder_get_object (priv->ui_builder, "box1"));
+	//Add some widget that glade wont allow to use them :)
 	gtk_container_add (GTK_CONTAINER(gtk_builder_get_object (priv->ui_builder, "box2")),priv->swt_git);
 	gtk_container_add (GTK_CONTAINER(gtk_builder_get_object (priv->ui_builder, "box3")),priv->btn_browse);
-
+	gtk_box_pack_start (GTK_BOX(gtk_builder_get_object (priv->ui_builder, "box5")),priv->btn_browse_icon,TRUE,TRUE,0);
 
 
 	GtkWidget *textv = GTK_WIDGET (gtk_builder_get_object (priv->ui_builder, "textview1"));

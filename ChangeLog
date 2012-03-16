@@ -1,4 +1,12 @@
 ------------------------------------------------------------
+revno:       7
+committer:   Bijan Binaee <bijanbina@gmail.com>
+branch nick: Main
+timestamp:   Friday, March 16, 2012
+message:
+  Research for GtkAssistent and result if we not use it
+  finish the first step new-project wizard
+------------------------------------------------------------
 revno:       6
 committer:   Bijan Binaee <bijanbina@gmail.com>
 branch nick: Main
