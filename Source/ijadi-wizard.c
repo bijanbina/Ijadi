@@ -21,16 +21,19 @@
 typedef struct _IjadiWizardPrivate IjadiWizardPrivate;
 struct _IjadiWizardPrivate
 {
-	GtkWidget* btn_create;
-	GtkWidget* btn_cancel;
+	GtkWidget* btn_next;
+	GtkWidget* btn_back;
 	GtkWidget* box_button;
 	GtkWidget* box_main;
 	GtkWidget* box_ui;//All of information widget inside here
+	GtkWidget* bin_ui;
 	GtkWidget* img_header;
 	GtkWidget* swt_git;//Git Switch
 	GtkWidget* btn_browse;
 	GtkWidget* btn_browse_icon;
 	GtkBuilder *ui_builder;//Create user interface from ui file
+	gint 				page_num;//keep current page number
+	
 };
 
 #define IJADI_WIZARD_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), IJADI_TYPE_WIZARD, IjadiWizardPrivate))
@@ -89,17 +92,6 @@ ijadi_wizard_class_init (IjadiWizardClass *klass)
 
 }
 /*********************************** PRIVATE FUNCTION ****************************************/
-//! run when new project button clicked
-/*!
-    \param button some made entery(you must initialize it befor invoke this finction)
-    \return user_data box widget
-*/
-void
-ijadi_wizard_btn_new_project_clicked (GtkButton *button, gpointer user_data)
-{
-	IjadiWizard *object = IJADI_WIZARD(user_data);
-	g_printf("Hi\n");
-}
 //! run when git swich button changed
 /*!
     \param button some made entery(you must initialize it befor invoke this finction)
@@ -122,19 +114,11 @@ ijadi_wizard_swt_git_active (GtkSwitch *widget,gboolean value,gpointer   user_da
     \param txt some made entery(you must initialize it befor invoke this finction)
     \return a box widget
 */
-GtkWidget *
-ijadi_gui_create_ui (IjadiWizard *object)
+void *
+ijadi_gui_ui_init (IjadiWizard *object)
 {
 	IjadiWizardPrivate *priv = IJADI_WIZARD_PRIVATE(object);
-	GtkWidget *ui_widget;
 	GError* error = NULL;
-
-	//Create some widget that glade wont allow to use them :)
-	priv->swt_git = gtk_switch_new ();
-	priv->btn_browse = gtk_file_chooser_button_new ("Browse",GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
-	priv->btn_browse_icon = gtk_file_chooser_button_new ("Browse Icon",GTK_FILE_CHOOSER_ACTION_OPEN);
-	//Set New widget prpert
-	gtk_switch_set_active(GTK_SWITCH(priv->swt_git),TRUE);
 	
 	priv->ui_builder = gtk_builder_new ();
 	if (!gtk_builder_add_from_file (priv->ui_builder, LOCAL_UI"/new-wizard.ui", &error))
@@ -142,18 +126,43 @@ ijadi_gui_create_ui (IjadiWizard *object)
 		g_critical ("Couldn't load builder file: %s", error->message);
 		g_error_free (error);
 	}
+}
+//! return current page (relevant to page_num) that created from ui file
+/*!
+    \param txt some made entery(you must initialize it befor invoke this finction)
+    \return a box widget
+*/
+GtkWidget *
+ijadi_gui_get_page_from_ui (IjadiWizard *object)
+{
+	IjadiWizardPrivate *priv = IJADI_WIZARD_PRIVATE(object);
+	GtkWidget *ui_widget;
+	switch (priv->page_num)
+	{
+		case 1:
+			//Create some widget that glade wont allow to use them :)
+			priv->swt_git = gtk_switch_new ();
+			priv->btn_browse = gtk_file_chooser_button_new ("Browse",GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+			priv->btn_browse_icon = gtk_file_chooser_button_new ("Browse Icon",GTK_FILE_CHOOSER_ACTION_OPEN);
+			//Set New widget prpert
+			gtk_switch_set_active(GTK_SWITCH(priv->swt_git),TRUE);
 	
-	/* connect signal handlers */
-	g_signal_connect (priv->swt_git ,"notify::active", G_CALLBACK (ijadi_wizard_swt_git_active) , object);
-	ui_widget = GTK_WIDGET (gtk_builder_get_object (priv->ui_builder, "box1"));
-	//Add some widget that glade wont allow to use them :)
-	gtk_container_add (GTK_CONTAINER(gtk_builder_get_object (priv->ui_builder, "box2")),priv->swt_git);
-	gtk_container_add (GTK_CONTAINER(gtk_builder_get_object (priv->ui_builder, "box3")),priv->btn_browse);
-	gtk_box_pack_start (GTK_BOX(gtk_builder_get_object (priv->ui_builder, "box5")),priv->btn_browse_icon,TRUE,TRUE,0);
+	
+			/* connect signal handlers */
+			g_signal_connect (priv->swt_git ,"notify::active", G_CALLBACK (ijadi_wizard_swt_git_active) , object);
+			ui_widget = GTK_WIDGET (gtk_builder_get_object (priv->ui_builder, "page1"));
+			//Add some widget that glade wont allow to use them :)
+			gtk_container_add (GTK_CONTAINER(gtk_builder_get_object (priv->ui_builder, "box3")),priv->swt_git);
+			gtk_container_add (GTK_CONTAINER(gtk_builder_get_object (priv->ui_builder, "box4")),priv->btn_browse);
+			gtk_box_pack_start (GTK_BOX(gtk_builder_get_object (priv->ui_builder, "box5")),priv->btn_browse_icon,TRUE,TRUE,0);
 
 
-	GtkWidget *textv = GTK_WIDGET (gtk_builder_get_object (priv->ui_builder, "textview1"));
-	gtk_style_context_add_class (gtk_widget_get_style_context (textv),"ijadi-text-view");
+			GtkWidget *textv = GTK_WIDGET (gtk_builder_get_object (priv->ui_builder, "textview1"));
+			gtk_style_context_add_class (gtk_widget_get_style_context (textv),"ijadi-text-view");
+			break;
+		case 2:
+			ui_widget = GTK_WIDGET (gtk_builder_get_object (priv->ui_builder, "page2"));
+	}
 	gtk_widget_unparent (ui_widget);
 	return ui_widget;
 }
@@ -178,6 +187,61 @@ ijadi_gui_create_form (GtkWidget *txt,gchar *label)
 	gtk_widget_set_margin_top(box_form,5);
     return box_form;
 }
+/********************************** CALLBACK FUNCTION **************************************/
+//! run when next button clicked
+/*!
+    \param button some made entery(you must initialize it befor invoke this finction)
+    \return user_data box widget
+*/
+void
+ijadi_wizard_btn_next_clicked (GtkButton *button, gpointer user_data)
+{
+	IjadiWizard *object = IJADI_WIZARD(user_data);
+	IjadiWizardPrivate *priv = IJADI_WIZARD_PRIVATE(object);
+	if (priv->page_num == IJADI_MAX_PAGENUM)
+		;//HERE PROJECT MUST CREATE;
+	priv->page_num++;
+	if (priv->page_num == IJADI_MAX_PAGENUM)
+		gtk_button_set_label (GTK_BUTTON(priv->btn_next),"Finish");
+		if (priv->page_num != IJADI_MIN_PAGENUM)
+		gtk_button_set_label (GTK_BUTTON(priv->btn_back),"Back");
+	//-----------Release Widget-------------
+	gtk_container_remove (GTK_CONTAINER(priv->box_ui),priv->bin_ui);
+	//gtk_widget_destroy (priv->bin_ui);
+	//----------------Create UI-----------------
+	priv->bin_ui = ijadi_gui_get_page_from_ui (object);
+	gtk_container_add (GTK_CONTAINER(priv->box_ui),priv->bin_ui);
+}
+//! run when back button clicked
+/*!
+    \param button some made entery(you must initialize it befor invoke this finction)
+    \return user_data box widget
+*/
+void
+ijadi_wizard_btn_back_clicked (GtkButton *button, gpointer user_data)
+{
+	IjadiWizard *object = IJADI_WIZARD(user_data);
+	IjadiWizardPrivate *priv = IJADI_WIZARD_PRIVATE(object);
+	if (priv->page_num == IJADI_MIN_PAGENUM)
+	{
+		gtk_widget_hide (GTK_WIDGET(object));
+		gtk_widget_destroy (GTK_WIDGET(object));
+	}
+	else
+	{
+		priv->page_num--;
+		if (priv->page_num == IJADI_MIN_PAGENUM)
+			gtk_button_set_label (GTK_BUTTON(priv->btn_back),"Cancel");
+		if (priv->page_num != IJADI_MAX_PAGENUM)
+			gtk_button_set_label (GTK_BUTTON(priv->btn_next),"Next");
+		//-----------Release Widget-------------
+		gtk_container_remove (GTK_CONTAINER(priv->box_ui),priv->bin_ui);
+		//gtk_widget_destroy (priv->bin_ui);
+		//----------------Create UI-----------------
+		priv->bin_ui = ijadi_gui_get_page_from_ui (object);
+		gtk_container_add (GTK_CONTAINER(priv->box_ui),priv->bin_ui);
+	}
+}
 /************************************ PUBLIC FUNCTION ****************************************/
 //! create main gui window 
 /*!
@@ -190,6 +254,8 @@ IjadiWizard* Ijadi_wizard_new()
 					   "type", GTK_WINDOW_TOPLEVEL,NULL);
 	//create private data from objet
 	IjadiWizardPrivate *priv = IJADI_WIZARD_PRIVATE(object);
+	//--------------- Set default value -------------
+	priv->page_num = 1;
 	//Create Wizard Window
 	//--------------- Set Window -------------
 	gtk_style_context_add_class (gtk_widget_get_style_context (GTK_WIDGET(object)),"ijadi-wizard");
@@ -197,17 +263,20 @@ IjadiWizard* Ijadi_wizard_new()
 	gtk_window_set_title (GTK_WINDOW(object), "New Project");
 	//------------Create Widget----------------
 	priv->img_header = gtk_image_new_from_file(LOCAL_RESOURCES"/new-header.png");
-	priv->btn_cancel  = gtk_button_new_with_label ("Cancel");
-	priv->btn_create  = gtk_button_new_with_label ("Next");
+	priv->btn_back  = gtk_button_new_with_label ("Cancel");
+	priv->btn_next  = gtk_button_new_with_label ("Next");
 	//------------Create Layout--------------
 	//----------------Create UI-----------------
-	priv->box_ui = ijadi_gui_create_ui (object);
+	ijadi_gui_ui_init (object);
+	priv->box_ui = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL );
+	priv->bin_ui = ijadi_gui_get_page_from_ui (object);
+	gtk_container_add (GTK_CONTAINER(priv->box_ui),priv->bin_ui);
 	//---------------------Button BOX--------------------------
 	priv->box_button = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL );
 	gtk_button_box_set_layout (GTK_BUTTON_BOX (priv->box_button),GTK_BUTTONBOX_END);
-	gtk_box_pack_start (GTK_BOX(priv->box_button),priv->btn_cancel,FALSE,TRUE,0);
-	gtk_box_pack_start (GTK_BOX(priv->box_button),priv->btn_create,FALSE,TRUE,0);
-	gtk_widget_set_margin_right(priv->box_button,30);
+	gtk_box_pack_start (GTK_BOX(priv->box_button),priv->btn_back,FALSE,TRUE,3);
+	gtk_box_pack_start (GTK_BOX(priv->box_button),priv->btn_next,FALSE,TRUE,3);
+	gtk_widget_set_margin_right(priv->box_button,15);
 	gtk_widget_set_margin_left(priv->box_button,5);
 	gtk_widget_set_margin_bottom(priv->box_button,15);
 	gtk_widget_set_margin_top(priv->box_button,5);
@@ -216,12 +285,12 @@ IjadiWizard* Ijadi_wizard_new()
 	priv->box_main = gtk_box_new(GTK_ORIENTATION_VERTICAL,5);
 	gtk_box_pack_start (GTK_BOX(priv->box_main),priv->img_header,TRUE,TRUE,0);
 	gtk_box_pack_start (GTK_BOX(priv->box_main),priv->box_ui,TRUE,TRUE,0);
-	//---------------------Info BOX--------------------------
 	gtk_box_pack_start (GTK_BOX(priv->box_main),priv->box_button,TRUE,TRUE,0);
-	//gtk_box_pack_start (GTK_BOX(priv->box_main),priv->box_button,TRUE,TRUE,0);
 	//Add layout to window
-	//gtk_widget_reparent(priv->box_main,GTK_CONTAINER (object));
 	gtk_container_add (GTK_CONTAINER(object),priv->box_main);
+	//---------------------Connect Signal--------------------------
+	g_signal_connect (priv->btn_back   , "clicked", G_CALLBACK (ijadi_wizard_btn_back_clicked), object);
+	g_signal_connect (priv->btn_next    , "clicked", G_CALLBACK (ijadi_wizard_btn_next_clicked), object);
 	//------------------Finalize-----------------
 	gtk_window_set_application (GTK_WINDOW(object),GTK_APPLICATION(IJADI_APP));
 	return object;
