@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <gtk/gtk.h>
+#include <libanjuta/anjuta-pkg-config-chooser.h>
 
 G_BEGIN_DECLS
 
@@ -31,8 +32,8 @@ G_BEGIN_DECLS
 #define IJADI_IS_WIZARD_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), IJADI_TYPE_WIZARD))
 #define IJADI_WIZARD_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), IJADI_TYPE_WIZARD, IjadiWizardClass))
 
-#define IJADI_MAX_PAGENUM 2
-#define IJADI_MIN_PAGENUM 1
+#define IJADI_MAX_PAGE_NUM 3
+#define IJADI_MIN_PAGE_NUM 1
 
 typedef struct _IjadiWizardClass IjadiWizardClass;
 typedef struct _IjadiWizard IjadiWizard;

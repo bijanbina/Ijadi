@@ -23,7 +23,8 @@ AC_PROG_CXX
 
 PKG_CHECK_MODULES([GTK], [gtk+-3.0  >= 3.2.0])
 PKG_CHECK_MODULES([CAIRO], [cairo >= 1.0.0])
-PKG_CHECK_MODULES(GDK, [gdk-3.0 >= 2.91.7])
+PKG_CHECK_MODULES([GDK], [gdk-3.0 >= 2.91.7])
+PKG_CHECK_MODULES([LIBANJUTA],[libanjuta-3.0])
 #force to less verbose build output
 AM_SILENT_RULES([yes])
 
@@ -32,6 +33,7 @@ AC_CONFIG_FILES([
 	Source/Makefile
   Resources/Makefile
   Resources/UI/Makefile
+  Script/Makefile
 ])
 
 AC_OUTPUT

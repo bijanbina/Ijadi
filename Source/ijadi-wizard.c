@@ -31,8 +31,11 @@ struct _IjadiWizardPrivate
 	GtkWidget* swt_git;//Git Switch
 	GtkWidget* btn_browse;
 	GtkWidget* btn_browse_icon;
+	GtkWidget* list_pkg;
+	GList* pages;
 	GtkBuilder *ui_builder;//Create user interface from ui file
 	gint 				page_num;//keep current page number
+	
 	
 };
 
@@ -126,6 +129,34 @@ ijadi_gui_ui_init (IjadiWizard *object)
 		g_critical ("Couldn't load builder file: %s", error->message);
 		g_error_free (error);
 	}
+priv->swt_git = gtk_switch_new ();
+	//--------------------------Create Page-----------------------------
+	GtkWidget *ui_buffer;
+	ui_buffer = GTK_WIDGET(gtk_builder_get_object (priv->ui_builder, "page2"));
+	gtk_container_add (GTK_CONTAINER(ui_buffer),priv->swt_git);
+	//---------------------------Page ONE-------------------------------
+	//Create some widget that glade wont allow to use them :)
+	priv->swt_git = gtk_switch_new ();
+	priv->btn_browse = gtk_file_chooser_button_new ("Browse",GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+	priv->btn_browse_icon = gtk_file_chooser_button_new ("Browse Icon",GTK_FILE_CHOOSER_ACTION_OPEN);
+	//Set New widget prpert
+	gtk_switch_set_active(GTK_SWITCH(priv->swt_git),TRUE);
+
+			
+	
+	// connect signal handlers //
+	g_signal_connect (priv->swt_git ,"notify::active", G_CALLBACK (ijadi_wizard_swt_git_active) , object);
+	ui_buffer = GTK_WIDGET (gtk_builder_get_object (priv->ui_builder, "page1"));
+	//Add some widget that glade wont allow to use them :)
+	gtk_container_add (GTK_CONTAINER(gtk_builder_get_object (priv->ui_builder, "box3")),priv->swt_git);
+	gtk_container_add (GTK_CONTAINER(gtk_builder_get_object (priv->ui_builder, "box4")),priv->btn_browse);
+	gtk_box_pack_start (GTK_BOX(gtk_builder_get_object (priv->ui_builder, "box5")),priv->btn_browse_icon,TRUE,TRUE,0);
+	//Add Page List
+	priv->pages = g_list_append(priv->pages,ui_buffer);
+	//---------------------------Page Two-------------------------------
+
+
+	    
 }
 //! return current page (relevant to page_num) that created from ui file
 /*!
@@ -137,31 +168,30 @@ ijadi_gui_get_page_from_ui (IjadiWizard *object)
 {
 	IjadiWizardPrivate *priv = IJADI_WIZARD_PRIVATE(object);
 	GtkWidget *ui_widget;
+	
+	GtkWidget *entry,*scroll_window;
 	switch (priv->page_num)
 	{
 		case 1:
-			//Create some widget that glade wont allow to use them :)
-			priv->swt_git = gtk_switch_new ();
-			priv->btn_browse = gtk_file_chooser_button_new ("Browse",GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
-			priv->btn_browse_icon = gtk_file_chooser_button_new ("Browse Icon",GTK_FILE_CHOOSER_ACTION_OPEN);
-			//Set New widget prpert
-			gtk_switch_set_active(GTK_SWITCH(priv->swt_git),TRUE);
-	
-	
-			/* connect signal handlers */
-			g_signal_connect (priv->swt_git ,"notify::active", G_CALLBACK (ijadi_wizard_swt_git_active) , object);
 			ui_widget = GTK_WIDGET (gtk_builder_get_object (priv->ui_builder, "page1"));
-			//Add some widget that glade wont allow to use them :)
-			gtk_container_add (GTK_CONTAINER(gtk_builder_get_object (priv->ui_builder, "box3")),priv->swt_git);
-			gtk_container_add (GTK_CONTAINER(gtk_builder_get_object (priv->ui_builder, "box4")),priv->btn_browse);
-			gtk_box_pack_start (GTK_BOX(gtk_builder_get_object (priv->ui_builder, "box5")),priv->btn_browse_icon,TRUE,TRUE,0);
-
-
-			GtkWidget *textv = GTK_WIDGET (gtk_builder_get_object (priv->ui_builder, "textview1"));
-			gtk_style_context_add_class (gtk_widget_get_style_context (textv),"ijadi-text-view");
+			
 			break;
 		case 2:
+			priv->list_pkg =  gtk_switch_new ();
+			g_printf("Hi\n");
+			
 			ui_widget = GTK_WIDGET (gtk_builder_get_object (priv->ui_builder, "page2"));
+
+			//scroll_window = gtk_scrolled_window_new (NULL, NULL);
+			//gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (scroll_window), GTK_SHADOW_IN);
+
+			//entry = anjuta_pkg_config_chooser_new ();
+			//anjuta_pkg_config_chooser_show_active_column (ANJUTA_PKG_CONFIG_CHOOSER (entry), TRUE);
+			//gtk_container_add (GTK_CONTAINER (scroll_window), entry);
+//box7
+			//gtk_box_pack_start (GTK_BOX(ui_widget),priv->list_pkg,TRUE,TRUE,0);
+			//gtk_container_add (GTK_CONTAINER(gtk_builder_get_object (priv->ui_builder, "box7")),priv->list_pkg);");
+			break;
 	}
 	gtk_widget_unparent (ui_widget);
 	return ui_widget;
@@ -198,12 +228,12 @@ ijadi_wizard_btn_next_clicked (GtkButton *button, gpointer user_data)
 {
 	IjadiWizard *object = IJADI_WIZARD(user_data);
 	IjadiWizardPrivate *priv = IJADI_WIZARD_PRIVATE(object);
-	if (priv->page_num == IJADI_MAX_PAGENUM)
-		;//HERE PROJECT MUST CREATE;
+	if (priv->page_num == IJADI_MAX_PAGE_NUM)
+		return;//HERE PROJECT MUST CREATE;
 	priv->page_num++;
-	if (priv->page_num == IJADI_MAX_PAGENUM)
+	if (priv->page_num == IJADI_MAX_PAGE_NUM)
 		gtk_button_set_label (GTK_BUTTON(priv->btn_next),"Finish");
-		if (priv->page_num != IJADI_MIN_PAGENUM)
+	if (priv->page_num != IJADI_MIN_PAGE_NUM)
 		gtk_button_set_label (GTK_BUTTON(priv->btn_back),"Back");
 	//-----------Release Widget-------------
 	gtk_container_remove (GTK_CONTAINER(priv->box_ui),priv->bin_ui);
@@ -222,7 +252,7 @@ ijadi_wizard_btn_back_clicked (GtkButton *button, gpointer user_data)
 {
 	IjadiWizard *object = IJADI_WIZARD(user_data);
 	IjadiWizardPrivate *priv = IJADI_WIZARD_PRIVATE(object);
-	if (priv->page_num == IJADI_MIN_PAGENUM)
+	if (priv->page_num == IJADI_MIN_PAGE_NUM)
 	{
 		gtk_widget_hide (GTK_WIDGET(object));
 		gtk_widget_destroy (GTK_WIDGET(object));
@@ -230,9 +260,9 @@ ijadi_wizard_btn_back_clicked (GtkButton *button, gpointer user_data)
 	else
 	{
 		priv->page_num--;
-		if (priv->page_num == IJADI_MIN_PAGENUM)
+		if (priv->page_num == IJADI_MIN_PAGE_NUM)
 			gtk_button_set_label (GTK_BUTTON(priv->btn_back),"Cancel");
-		if (priv->page_num != IJADI_MAX_PAGENUM)
+		if (priv->page_num != IJADI_MAX_PAGE_NUM)
 			gtk_button_set_label (GTK_BUTTON(priv->btn_next),"Next");
 		//-----------Release Widget-------------
 		gtk_container_remove (GTK_CONTAINER(priv->box_ui),priv->bin_ui);

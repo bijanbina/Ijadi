@@ -4,7 +4,7 @@ SUBDIRS = UI
 Resourcesdir = $(datadir)/ijadi/Resources
 Applicationdir = $(datadir)/applications
 
-Resources_DATA   = new-header.png style.css
+Resources_DATA   = new-header.png style.css TemplateProject.tar.gz
 Application_DATA = ijadi.desktop
 
-EXTRA_DIST = new-header.png new-header-2.png style.css ijadi.desktop
+EXTRA_DIST = new-header.png new-header-2.png style.css ijadi.desktop TemplateProject.tar.gz
