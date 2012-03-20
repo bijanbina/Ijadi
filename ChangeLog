@@ -1,4 +1,27 @@
 ------------------------------------------------------------
+revno:       10
+committer:   Bijan Binaee <bijanbina@gmail.com>
+branch nick: Main
+timestamp:   Friday, March 20, 2012
+message:
+  create GList Page
+  Impliment Pages Array
+  create header Array
+  use header in page manager
+  Design new header for add library
+  embed add library header in make file
+  set style of add library label
+  add widget of library to new project wizard
+------------------------------------------------------------
+revno:       9
+committer:   Bijan Binaee <bijanbina@gmail.com>
+branch nick: Main
+timestamp:   Friday, March 18, 2012
+message:
+  Find how add something to ExtraDist
+  Add Template Project and other resource file to make file.am
+  Add To makefile
+------------------------------------------------------------
 revno:       8
 committer:   Bijan Binaee <bijanbina@gmail.com>
 branch nick: Main

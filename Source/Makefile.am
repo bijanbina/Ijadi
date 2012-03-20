@@ -1,7 +1,7 @@
 #some variable for data directory defined here "These Value Can use in source file"
 INCLUDES =	-DIJADI_RESOURCES=\"$(datadir)/ijadi/Resources\" \
             -DIJADI_UI=\"$(datadir)/ijadi/UI\" \
-            -DIJADI_UI=\"$(datadir)/ijadi/Script\"
+            -DIJADI_Script=\"$(datadir)/ijadi/Script\"
 
 bin_PROGRAMS = ijadi
 
