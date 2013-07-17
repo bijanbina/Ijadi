@@ -20,7 +20,9 @@
 
 //#define LOCAL_RESOURCES IJADI_RESOURCES
 //#define LOCAL_UI IJADI_UI
+//#define LOCAL_SCRIPT IJADI_SCRIPT
 #define LOCAL_RESOURCES "Resources"
 #define LOCAL_UI "Resources/UI"
+#define LOCAL_SCRIPT "Script"
 
 #endif /* _IJADI_GUI_H_ */

@@ -25,12 +25,21 @@
 typedef struct _IjadiGuiPrivate IjadiGuiPrivate;
 struct _IjadiGuiPrivate
 {
-	GtkWidget* btn_update_source;
+	GtkWidget* btn_import_url;
 	GtkWidget* btn_new_project;
-	GtkWidget* box_button;
+	GtkWidget* btn_open_project;
+	GtkWidget* btn_import_project;
+	GtkWidget* img_import_url;
+	GtkWidget* img_new_project;
+	GtkWidget* img_open_project;
+	GtkWidget* img_import_project;
+	GtkWidget* btn_urlimport_project;
+	GtkWidget *img_welcome;
+	GtkWidget* box_button_1;
+	GtkWidget* box_button_2;
 	GtkWidget* box_main;
-	GtkWidget *menu_bar;
-	GtkWidget *toolbar;
+	GtkWidget* menu_bar;
+	GtkWidget* toolbar;
 	IjadiWizard *wizard;
 };
 
@@ -146,8 +155,8 @@ ijadi_gui_create_action_menu (GtkWidget *menu,const gchar *name)
 {
 	GtkAction *action = gtk_action_new(name, name,name,NULL);
 	GtkWidget *menuItem = gtk_action_create_menu_item(action);
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuItem);
-    gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuItem), NULL);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuItem);
+	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuItem), NULL);
 	return action;
 }
 
@@ -167,9 +176,9 @@ ijadi_gui_create_menu_file ()
 GtkWidget*
 ijadi_gui_create_menubar ()
 {
-  GtkWidget *menubar;
-  GtkWidget *menuitem;
-  GtkWidget *menu;
+	GtkWidget *menubar;
+	GtkWidget *menuitem;
+	GtkWidget *menu;
 
 	menubar = gtk_menu_bar_new ();
 	menuitem = gtk_menu_item_new_with_label ("File");
@@ -253,7 +262,6 @@ void ijadi_gui_start (IjadiGui *object)
 */
 IjadiGui * 		Ijadi_gui_new()
 {
-	g_type_init ();
 	IjadiGui *object = g_object_new(IJADI_TYPE_GUI,
 					   "type", GTK_WINDOW_TOPLEVEL,NULL);
 
@@ -269,38 +277,68 @@ IjadiGui * 		Ijadi_gui_new()
 	//gtk_window_set_icon (GTK_WINDOW(object),create_pixbuf("/home/bijan/Source/Ijadi/PURE/Resourses/e.png"));
 
 	//Style for window
-	gtk_style_context_add_class (gtk_widget_get_style_context (GTK_WIDGET(object)), "ijadi-window");
-	gtk_css_provider_load_from_path (GTK_CSS_PROVIDER(provider),LOCAL_RESOURCES"/style.css",NULL);
-	gtk_style_context_reset_widgets (gdk_screen_get_default ());
+	//gtk_style_context_add_class (gtk_widget_get_style_context (GTK_WIDGET(object)), "ijadi-window");
+	//gtk_css_provider_load_from_path (GTK_CSS_PROVIDER(provider),LOCAL_RESOURCES"/style.css",NULL);
+	//gtk_style_context_reset_widgets (gdk_screen_get_default ());
 	//------------Create Widget----------------
+	//Add welcome image
+	priv->img_welcome = gtk_image_new_from_file ("/home/bijan/Project/Ijadi/PURE/Resources/mainwindow-welcome.png");
 	//Add Button
-	priv->btn_update_source = gtk_button_new_with_label("Update Source");
-	//
 	priv->btn_new_project = gtk_button_new_with_label("New Project");
+	priv->img_new_project = gtk_image_new_from_file ("/home/bijan/Pictures/Icons/Files-Edit-file-icon.png");
+	gtk_button_set_always_show_image(GTK_BUTTON(priv->btn_new_project),TRUE);
+	gtk_button_set_image (GTK_BUTTON(priv->btn_new_project),priv->img_new_project);
+	//
+	priv->btn_open_project = gtk_button_new_with_label("Open Project");
+	priv->img_open_project = gtk_image_new_from_file ("/home/bijan/Pictures/Icons/folder-open-icon.png");
+	gtk_button_set_always_show_image(GTK_BUTTON(priv->btn_open_project),TRUE);
+	gtk_button_set_image (GTK_BUTTON(priv->btn_open_project),priv->img_open_project);
+	//
+	priv->btn_import_project = gtk_button_new_with_label("Import Project");
+	priv->img_import_project = gtk_image_new_from_file ("/home/bijan/Pictures/Icons/import-icon.png");
+	gtk_button_set_always_show_image(GTK_BUTTON(priv->btn_import_project),TRUE);
+	gtk_button_set_image (GTK_BUTTON(priv->btn_import_project),priv->img_import_project);
+	//
+	priv->btn_import_url = gtk_button_new_with_label ("Import URL");
+	priv->img_import_url = gtk_image_new_from_file ("/home/bijan/Pictures/Icons/1372885853_folder_apollon.png");
+	gtk_button_set_always_show_image(GTK_BUTTON(priv->btn_import_url),TRUE);
+	gtk_button_set_image (GTK_BUTTON(priv->btn_import_url),priv->img_import_url);
 	//--------------Create Menu--------------
 	priv->menu_bar = ijadi_gui_create_menubar ();
 	//------------Create ToolBar-------------
 	priv->toolbar = ijadi_gui_create_toolbar();
 	//------------Create Layout--------------
-	//Create Button Box
+	//Create Button Box row 1
+	priv->box_button = gtk_grid_new ();
+	gtk_grid_attach (GTK_GRID(box_button),priv->btn_new_project,0,0,1,1);
+	gtk_grid_attach (GTK_GRID(box_button),priv->btn_open_project,1,0,1,1);
+	gtk_box_pack_start (GTK_BOX(priv->box_button_1),priv->btn_new_project,TRUE,TRUE,0);
+	gtk_box_pack_start (GTK_BOX(priv->box_button_1),priv->btn_open_project,TRUE,TRUE,0);
+	gtk_widget_set_margin_right(priv->box_button_1,5);
+	gtk_widget_set_margin_left(priv->box_button_1,5);
+	gtk_widget_set_margin_bottom(priv->box_button_1,5);
+	gtk_widget_set_margin_top(priv->box_button_1,5);
+	//Create Button Box row 2
 	priv->box_button = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
-	gtk_box_pack_start (GTK_BOX(priv->box_button),priv->btn_update_source,TRUE,TRUE,0);
-	gtk_box_pack_start (GTK_BOX(priv->box_button),priv->btn_new_project,TRUE,TRUE,0);
-	gtk_widget_set_margin_right(priv->box_button,5);
-	gtk_widget_set_margin_left(priv->box_button,5);
-	gtk_widget_set_margin_bottom(priv->box_button,5);
-	gtk_widget_set_margin_top(priv->box_button,5);
+	gtk_box_pack_start (GTK_BOX(priv->box_button_2),priv->btn_import_project,TRUE,TRUE,0);
+	gtk_box_pack_start (GTK_BOX(priv->box_button_2),priv->btn_import_url,TRUE,TRUE,0);
+	gtk_widget_set_margin_right(priv->box_button_2,5);
+	gtk_widget_set_margin_left(priv->box_button_2,5);
+	gtk_widget_set_margin_bottom(priv->box_button_2,5);
+	gtk_widget_set_margin_top(priv->box_button_2,5);
 	//
+	
 	priv->box_main = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_box_pack_start (GTK_BOX(priv->box_main),priv->menu_bar,TRUE,TRUE,0);
 	gtk_box_pack_start (GTK_BOX(priv->box_main),priv->toolbar,TRUE,TRUE,0);
-	gtk_box_pack_start (GTK_BOX(priv->box_main),priv->box_button,TRUE,TRUE,0);
+	gtk_box_pack_start (GTK_BOX(priv->box_main),priv->img_welcome,TRUE,TRUE,0);
+	gtk_box_pack_start (GTK_BOX(priv->box_main),priv->box_button_1,TRUE,TRUE,0);
+	gtk_box_pack_start (GTK_BOX(priv->box_main),priv->box_button_2,TRUE,TRUE,0);
 	
 	//Add layout to window
 	gtk_container_add (GTK_CONTAINER (object), priv->box_main);
 	//-----------Connect Signal-------------
 	g_signal_connect (GTK_WIDGET(object), "destroy", G_CALLBACK (gtk_main_quit), NULL);
-	g_signal_connect (priv->btn_update_source, "clicked", G_CALLBACK (ijadi_gui_btn_update_source_clicked), object);
 	g_signal_connect (priv->btn_new_project, "clicked", G_CALLBACK (ijadi_gui_btn_new_project_clicked), object);
 	//------------------Finalize-----------------
 	gtk_window_set_application (GTK_WINDOW(object),GTK_APPLICATION(IJADI_APP));

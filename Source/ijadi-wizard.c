@@ -96,6 +96,20 @@ ijadi_wizard_class_init (IjadiWizardClass *klass)
 
 }
 /*********************************** PRIVATE FUNCTION ****************************************/
+//! run when project wizard finished
+/*!
+    \param object an instance from IjadiWizard(use for invoke information about project)
+*/
+int ijadi_wizard_create_project(IjadiWizard *object)
+{
+	IjadiWizardPrivate *priv = IJADI_WIZARD_PRIVATE(object);
+	gsize size = 2000;
+	gchar create_command[size];
+	g_strlcpy (create_command,LOCAL_SCRIPT"/newProject.sh -n ",size);
+	g_strlcat (create_command,gtk_entry_get_text (GTK_ENTRY(gtk_builder_get_object (priv->ui_builder, "entry_name"))),size);
+	g_printf("%s\n",&create_command);
+	return system(create_command);
+}
 //! run when git swich button changed
 /*!
     \param button some made entery(you must initialize it befor invoke this finction)
@@ -139,7 +153,7 @@ ijadi_wizard_ui_init (IjadiWizard *object)
 	priv->btn_browse_icon = gtk_file_chooser_button_new ("Browse Icon",GTK_FILE_CHOOSER_ACTION_OPEN);
 	//Set New widget prpert
 	gtk_switch_set_active(GTK_SWITCH(priv->swt_git),TRUE);
-	
+	gtk_combo_box_set_active (GTK_COMBO_BOX(gtk_builder_get_object (priv->ui_builder, "combobox1")),0);
 	// connect signal handlers //
 	g_signal_connect (priv->swt_git ,"notify::active", G_CALLBACK (ijadi_wizard_swt_git_active) , object);
 	ui_buffer = GTK_WIDGET (gtk_builder_get_object (priv->ui_builder, "page1"));
@@ -215,6 +229,7 @@ ijadi_wizard_btn_next_clicked (GtkButton *button, gpointer user_data)
 	IjadiWizardPrivate *priv = IJADI_WIZARD_PRIVATE(object);
 	if (priv->page_num == IJADI_MAX_PAGE_NUM)
 	{
+		ijadi_wizard_create_project(IJADI_WIZARD(object));
 		gtk_widget_hide (GTK_WIDGET(object));
 		gtk_widget_destroy (GTK_WIDGET(object));
 		return;//HERE PROJECT MUST CREATE;
