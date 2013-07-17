@@ -14,8 +14,6 @@ AC_CONFIG_HEADERS([config.h])
 # Use it to link library
 AC_PROG_LIBTOOL
 
-# check for gtk-doc
-GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
 
 # Checks for programs.
 AC_PROG_CC
