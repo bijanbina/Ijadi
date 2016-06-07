@@ -1,0 +1,7 @@
+usage: Gbee [--help]
+           <command> [<args>]
+
+The most commonly used Gbee commands are:
+   file       import some c file for inerpret
+
+See 'Gbee help <command>' for more information on a specific command.
